@@ -51,15 +51,23 @@ def read_data():
         line = line.replace(' ', '')
         temp = line.split(',')
         ltemp = []
-        for i in range(QI_num):
-            index = QI_INDEX[i]
-            if IS_CAT[i] is False:
-                try:
-                    numeric_dict[i][temp[index]] += 1
-                except KeyError:
-                    numeric_dict[i][temp[index]] = 1
-            ltemp.append(temp[index])
-        ltemp.append(temp[SA_INDEX])
+        #for i in range(QI_num): @RR2020
+        #    index = QI_INDEX[i]
+        #    if IS_CAT[i] is False:
+        #        try:
+        #            numeric_dict[i][temp[index]] += 1
+        #        except KeyError:
+        #            numeric_dict[i][temp[index]] = 1
+        #    ltemp.append(temp[index])
+        for i in range(len(temp)):
+            if i in QI_INDEX:
+                if IS_CAT[QI_INDEX.index(i)] is False:
+                    try:
+                        numeric_dict[QI_INDEX.index(i)][temp[i]] += 1
+                    except KeyError:
+                        numeric_dict[QI_INDEX.index(i)][temp[i]] = 1
+            ltemp.append(temp[i])
+        #ltemp.append(temp[SA_INDEX])
         data.append(ltemp)
     # pickle numeric attributes and get NumRange
     for i in range(QI_num):

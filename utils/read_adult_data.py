@@ -26,6 +26,11 @@ QI_INDEX = [0, 1, 4, 5, 6, 8, 9, 13]
 IS_CAT = [False, True, False, True, True, True, True, True]
 SA_INDEX = -1
 
+ATT_NAMES_REORDERED = ['age', 'workclass', 'final_weight', 'education',
+             'education_num', 'marital_status', 'occupation', 'relationship',
+             'race', 'sex', 'capital_gain', 'capital_loss', 'hours_per_week',
+             'native_country', 'class']
+
 __DEBUG = False
 
 
@@ -51,6 +56,7 @@ def read_data():
         line = line.replace(' ', '')
         temp = line.split(',')
         ltemp = []
+        reordered_data = []
         #for i in range(QI_num): @RR2020
         #    index = QI_INDEX[i]
         #    if IS_CAT[i] is False:
@@ -59,6 +65,9 @@ def read_data():
         #        except KeyError:
         #            numeric_dict[i][temp[index]] = 1
         #    ltemp.append(temp[index])
+        j=0
+        for i in range(len(temp)):
+            reordered_data.append("")
         for i in range(len(temp)):
             if i in QI_INDEX:
                 if IS_CAT[QI_INDEX.index(i)] is False:
@@ -66,7 +75,14 @@ def read_data():
                         numeric_dict[QI_INDEX.index(i)][temp[i]] += 1
                     except KeyError:
                         numeric_dict[QI_INDEX.index(i)][temp[i]] = 1
-            ltemp.append(temp[i])
+                reordered_data[QI_INDEX.index(i)] = temp[i]
+                ATT_NAMES_REORDERED[QI_INDEX.index(i)] = ATT_NAMES[i]
+            else:
+                reordered_data[len(QI_INDEX)+j] = temp[i]
+                ATT_NAMES_REORDERED[len(QI_INDEX)+j] = ATT_NAMES[i]
+                j = j + 1
+        for value in reordered_data:
+            ltemp.append(value)
         #ltemp.append(temp[SA_INDEX])
         data.append(ltemp)
     # pickle numeric attributes and get NumRange
@@ -79,6 +95,9 @@ def read_data():
             static_file.close()
     return data
 
+#@RR2020
+def get_att_names():
+    return ATT_NAMES_REORDERED
 
 def read_tree():
     """read tree from data/tree_*.txt, store them in att_tree

@@ -300,8 +300,9 @@ def init(att_trees, data, k, QI_num=-1):
         else:
             IS_CAT.append(True)
     if QI_num <= 0:
-        #QI_LEN = len(data[0]) - 1 @RR2020
-        QI_LEN = len(IS_CAT)
+        #QI_LEN = len(data[0]) - 1
+        #QI_LEN = len(IS_CAT)
+        QI_LEN = len(ATT_TREES)
     else:
         QI_LEN = QI_num
     GL_K = k

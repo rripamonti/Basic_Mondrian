@@ -9,6 +9,7 @@ from utils.read_adult_data import read_data as read_adult
 from utils.read_adult_data import read_tree as read_adult_tree
 from utils.read_informs_data import read_data as read_informs
 from utils.read_informs_data import read_tree as read_informs_tree
+from utils.read_adult_data import get_att_names
 import sys, copy, random
 
 DATA_SELECT = 'a'
@@ -30,6 +31,7 @@ def write_to_file(result):
     write the anonymized result to anonymized.data
     """
     with open("data/anonymized.data", "w") as output:
+        output.write(';'.join(get_att_names())+'\n')
         for r in result:
             output.write(';'.join(map(extend_result, r)) + '\n')
 

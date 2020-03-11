@@ -162,6 +162,7 @@ def split_numerical(partition, dim, pwidth, pmiddle):
     sub_partitions = []
     # numeric attributes
     (splitVal, nextVal, low, high) = find_median(partition, dim)
+
     p_low = ATT_TREES[dim].dict[low]
     p_high = ATT_TREES[dim].dict[high]
     # update middle
@@ -340,7 +341,11 @@ def mondrian(att_trees, data, k, QI_num=-1):
             r_ncp += get_normalized_width(partition, i)
         temp = partition.middle
         for i in range(len(partition)):
-            result.append(temp + [partition.member[i][-1]])
+            #result.append(temp + [partition.member[i][-1]]) @RR2020
+            tmp = temp
+            for j in range(QI_LEN,len(partition.member[i])):
+                tmp = tmp + [partition.member[i][j]]
+            result.append(tmp)
         r_ncp *= len(partition)
         ncp += r_ncp
     # covert to NCP percentage

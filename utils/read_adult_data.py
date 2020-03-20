@@ -11,7 +11,7 @@ from models.gentree import GenTree
 from models.numrange import NumRange
 from utils.utility import cmp_str
 import pickle
-
+import pandas as pd
 import pdb
 
 ATT_NAMES = ['age', 'workclass', 'final_weight', 'education',
@@ -22,8 +22,8 @@ ATT_NAMES = ['age', 'workclass', 'final_weight', 'education',
 # age and education levels are treated as numeric attributes
 # only matrial_status and workclass has well defined generalization hierarchies.
 # other categorical attributes only have 2-level generalization hierarchies.
-QI_INDEX = [0, 1, 4, 5, 6, 8, 9, 13]
-IS_CAT = [False, True, False, True, True, True, True, True]
+QI_INDEX = [0, 1, 3, 5, 6, 8, 9, 13, 14]
+IS_CAT = [False, True, True, True, True, True, True, True, True]
 SA_INDEX = -1
 
 ATT_NAMES_REORDERED = ['age', 'workclass', 'final_weight', 'education',
@@ -85,14 +85,7 @@ def read_data():
             ltemp.append(value)
         #ltemp.append(temp[SA_INDEX])
         data.append(ltemp)
-    # pickle numeric attributes and get NumRange
-    for i in range(QI_num):
-        if IS_CAT[i] is False:
-            static_file = open('data/adult_' + ATT_NAMES[QI_INDEX[i]] + '_static.pickle', 'wb')
-            sort_value = list(numeric_dict[i].keys())
-            sort_value.sort(cmp=cmp_str)
-            pickle.dump((numeric_dict[i], sort_value), static_file)
-            static_file.close()
+
     return data
 
 #@RR2020
@@ -110,22 +103,20 @@ def read_tree():
         if IS_CAT[i]:
             att_trees.append(read_tree_file(att_names[i]))
         else:
-            att_trees.append(read_pickle_file(att_names[i]))
+            att_trees.append(read_numeric_identifier(att_names[i]))
     return att_trees
 
 
-def read_pickle_file(att_name):
+def read_numeric_identifier(att_name):
     """
     read pickle file for numeric attributes
     return numrange object
     """
-    try:
-        static_file = open('data/adult_' + att_name + '_static.pickle', 'rb')
-        (numeric_dict, sort_value) = pickle.load(static_file)
-    except:
-        print "Pickle file not exists!!"
-    static_file.close()
-    result = NumRange(sort_value, numeric_dict)
+    csvdata = pd.read_csv('data/adult.data',sep=',',header=0,names=ATT_NAMES)
+    csvdata = csvdata.sort_values(by=att_name)
+    csvdata = csvdata.dropna(subset=[att_name])
+    sort_value = csvdata.age.astype('str').unique()
+    result = NumRange(sort_value.tolist(), dict())
     return result
 
 
@@ -135,7 +126,7 @@ def read_tree_file(treename):
     leaf_to_path = {}
     att_tree = {}
     prefix = 'data/adult_'
-    postfix = ".txt"
+    postfix = ".csv"
     treefile = open(prefix + treename + postfix, 'rU')
     att_tree['*'] = GenTree('*')
     if __DEBUG:
@@ -161,3 +152,8 @@ def read_tree_file(treename):
         print "Nodes No. = %d" % att_tree['*'].support
     treefile.close()
     return att_tree
+
+def write_reorder_anonymized_data(filename,k):
+    csvdata = pd.read_csv(filename,sep=';',header=0)
+    csvdata = csvdata[ATT_NAMES]
+    csvdata.to_csv('data/anonymized_'+str(k)+'_ordered.csv',sep=';',index=0)
